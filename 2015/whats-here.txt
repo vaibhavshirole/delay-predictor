@@ -1,0 +1,3 @@
+airlines.csv	359 B
+airports.csv	24 kB
+flights.csv	592 MB
