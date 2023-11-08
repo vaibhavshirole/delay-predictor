@@ -1,4 +1,5 @@
 import tkinter as tk
+import delay_predict as dp
 
 root = tk.Tk()
 root.title("Flight Delay Predictor")
@@ -24,9 +25,9 @@ def submit():
     if(flight_number_entry.get()):
         # display prediction on gui
         # TO-DO: CALL PREDICTION CODE, GET RETURN VALUE AND DISPLAY IT
-        estimated_delay.grid_forget()
+        #estimated_delay.grid_forget()
 
-        delay = "Delay: 100"
+        delay = "Delay: " + str(dp.predict(flight_number_entry.get()))
         estimated_delay = tk.Label(root, text=delay, font=('calibre',14, 'bold'))
         estimated_delay.grid(row=4, column=0, padx=20, pady=10, sticky="w")
         
