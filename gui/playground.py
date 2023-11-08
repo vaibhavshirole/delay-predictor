@@ -1,5 +1,5 @@
 import tkinter as tk
-import delay_predict as dp
+#import delay_predict as dp
 
 root = tk.Tk()
 root.title("Flight Delay Predictor")
@@ -8,6 +8,9 @@ root.geometry("500x300")
 # entry data
 flight_number = tk.StringVar()
 flight_date = tk.StringVar() 
+
+# init output var
+estimated_delay = tk.Label(root, text="", font=('calibre',14, 'bold'))
 
 def submit():
     # display user inputs on gui
@@ -20,14 +23,18 @@ def submit():
     # user_date_input = "Selected flight date: " + flight_date
     # chosen_date = tk.Label(root, text=user_date_input)
     # chosen_date.grid(row=3,column=1)
-    global estimated_delay
 
+    #display prediction on gui
+    global estimated_delay
     if(flight_number_entry.get()):
-        # display prediction on gui
-        # TO-DO: CALL PREDICTION CODE, GET RETURN VALUE AND DISPLAY IT
-        #estimated_delay.grid_forget()
+        estimated_delay.grid_remove()
+        
+        # TO DO: put loading gif
 
         delay = "Delay: " + str(dp.predict(flight_number_entry.get()))
+
+        # TO DO: remove loading gif
+
         estimated_delay = tk.Label(root, text=delay, font=('calibre',14, 'bold'))
         estimated_delay.grid(row=4, column=0, padx=20, pady=10, sticky="w")
         
