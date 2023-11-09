@@ -193,8 +193,8 @@ def predict(flight_number):
     for i in range(len(ETA)):
         ETA_new.append(ETA[i][0])
     ATA = arrivals_cleaned['arrival_delay']
-    plt.scatter(ATA,ETA_new)
-    plt.xlabel='Actual Delay'
-    plt.ylabel='Estimated Delay'
+    # plt.scatter(ATA,ETA_new)
+    # plt.xlabel='Actual Delay'
+    # plt.ylabel='Estimated Delay'
 
     return ETA[0][0]
