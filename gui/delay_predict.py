@@ -11,6 +11,8 @@ from sklearn.preprocessing import StandardScaler
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 
+progress_val = 0
+
 def getdata(airline):
     apiKey = "gQvOAvCu725jH4VcgCA300hbQJNwFfz2"
     apiUrl = "https://aeroapi.flightaware.com/aeroapi/"
@@ -91,8 +93,9 @@ def get_historical_flight(callsign):
         return("Error executing request")
 
 def predict(flight_number):
-    #target_flight = input('Input flight callsign. e.g."UAL1"')
+    global progress_val
 
+    #target_flight = input('Input flight callsign. e.g."UAL1"')
     target_flight = flight_number
 
     flightdata = getflight(target_flight)
@@ -104,8 +107,11 @@ def predict(flight_number):
     origin = flight['origin.code_icao'][0]
     destination = flight['destination.code_icao'][0]
     print(origin)
+    progress_val+=10
+
     historical_data = get_historical_flight(target_flight)
     print(historical_data)
+    progress_val+=10
 
     historical_flight = pd.json_normalize(historical_data['flights'])
     historical_airline = historical_flight['operator_icao']
@@ -117,9 +123,12 @@ def predict(flight_number):
     historical_destination = historical_flight['destination.code_icao']
     flight_requested_historical = pd.DataFrame({'operator':historical_airline,'departure_delay':historical_departure_delay,'aircraft_type':historical_aircraft,'route_distance':historical_dist,'origin.code_icao':historical_origin,'destination.code_icao':historical_destination,'arrival_delay':historical_arrival_delay})
     print(flight_requested_historical)
+    progress_val+=10
 
     flight_requested = pd.DataFrame({'operator': [airline], 'departure_delay': [departure_delay], 'aircraft_type': [aircraft], 'route_distance': [dist], 'origin.code_icao': [origin], 'destination.code_icao': [destination], 'arrival_delay': [0]})
     print(flight_requested)
+    progress_val+=10
+
     airline = str(airline)
     output = getdata(airline)
     scheduled = pd.json_normalize(output['scheduled'])
@@ -172,6 +181,8 @@ def predict(flight_number):
     model.fit(X_train, y_train, epochs=1500, batch_size=32, validation_data=(X_test, y_test))
     loss = model.evaluate(X_test, y_test)
     print(f"Test Loss: {loss}")
+    progress_val+=20
+
     y_pred = model.predict(X_test)
 
     print(arrivals_cleaned)
@@ -184,10 +195,12 @@ def predict(flight_number):
 
     flight_requested = pd.DataFrame({'operator':[airline],'departure_delay':[departure_delay],'aircraft_type':[aircraft],'route_distance':[dist],'origin.code_icao':[origin],'destination.code_icao':[destination],'arrival_delay':[0]})
     print(flight_requested)
+    progress_val+=10
 
     flight_to_predict = scaler.fit_transform(X)
     ETA = model.predict(flight_to_predict)
     print("The estimated delay of this flight, in seconds, is:",ETA[0][0])
+    progress_val+=30
 
     ETA_new = []
     for i in range(len(ETA)):

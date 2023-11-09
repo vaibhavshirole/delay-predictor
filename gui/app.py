@@ -1,5 +1,8 @@
 import tkinter as tk
+from tkinter import ttk
+
 import threading
+import time
 import delay_predict as dp
 
 root = tk.Tk()
@@ -28,6 +31,11 @@ def predictor(flight_number):
     # estimated_arrival.grid(row=5, column=0, padx=10, pady=10, sticky="w")
 
 
+def update_progress():
+    while(is_dead == False):
+        pred_progress['value'] = dp.progress_val
+
+
 def submit():
     global delay_label # label
     global error_label # label
@@ -37,14 +45,21 @@ def submit():
     if(flight_number_entry.get()):
         error_label.grid_remove()   # remove input error
         delay_label.grid() # reinstate label
-
+        
+        # make delay prediction
         threading.Thread(target=predictor, daemon=True, args=(flight_number_entry.get(),)).start()
-   
+
+        # create progress bar
+        pred_progress.grid(row=4, column=1, padx=10, pady=10)
+        threading.Thread(target=update_progress, daemon=True).start()
+
     else:
         delay_label.grid_remove()   # remove prediction
         error_label.grid() # reinstate label
 
         error_label.config(text="Input a valid flight number")
+    
+    is_dead = True
 
 
 # output label : predicted delay
@@ -71,5 +86,13 @@ flight_number_entry.grid(row=0, column=1, padx=50, pady=10, sticky="e")
 sub_btn=tk.Button(root,text = 'ESTIMATE', command = submit, font=('calibre',14, 'bold'))
 sub_btn.grid(row=2, column=1, padx=10, pady=10)
 
+# progress bar
+pred_progress = ttk.Progressbar(
+    root,
+    orient=tk.HORIZONTAL,
+    length=200,
+    mode='determinate'
+)
+is_dead = False
 
 root.mainloop()
