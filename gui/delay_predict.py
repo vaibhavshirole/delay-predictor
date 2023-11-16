@@ -72,25 +72,32 @@ def get_airport_arrivals(airport):
     return airport_arrivals_cleaned
 
 def get_historical_flight(callsign):
+    # API credentials and URL
     apiKey = "gQvOAvCu725jH4VcgCA300hbQJNwFfz2"
     apiUrl = "https://aeroapi.flightaware.com/aeroapi/"
 
+    # Convert callsign to string
     flight = str(callsign)
-    current_utc_time = datetime.datetime.utcnow() - datetime.timedelta(days=1)  # gets all data before current day
+
+    # Calculate UTC timestamps for historical data retrieval
+    current_utc_time = datetime.datetime.utcnow() - datetime.timedelta(days=1)
     utc = current_utc_time.strftime("%Y-%m-%dT%H:%M:%SZ")
     T_15 = current_utc_time - datetime.timedelta(days=7)
     utc_1 = T_15.strftime("%Y-%m-%dT%H:%M:%SZ")
-    payload = {'max_pages': 4,'start':utc_1,'end':utc}
-    auth_header = {'x-apikey':apiKey}
 
+    # Define payload for API request
+    payload = {'max_pages': 4, 'start': utc_1, 'end': utc}
+    auth_header = {'x-apikey': apiKey}
+
+    # Make API request to get historical flight data
     response = requests.get(apiUrl + f"flights/{flight}",
-        params=payload, headers=auth_header)
+                            params=payload, headers=auth_header)
 
     if response.status_code == 200:
         output = response.json()
         return output
     else:
-        return("Error executing request")
+        return "Error executing request"
 
 def predict(flight_number):
     global progress_val
